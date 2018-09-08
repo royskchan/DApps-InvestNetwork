@@ -1,0 +1,176 @@
+<html>
+<head>
+
+<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<style>
+</style>
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+</head>
+<body>
+<br>
+<div class="container">
+<div class="row clearfix">
+<div class="col-md-12 column">
+<table class="table table-bordered table-hover" id="tab_logic">
+	<thead>
+	<tr >
+		<th class="text-center">#</th>
+		<th class="text-center">Stock</th>
+		<th class="text-center">Quantity</th>
+		<th class="text-center">Target Price</th>
+		<th class="text-center">Current Price</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td>1</td>
+		<td>
+			<select id='stock0' name="stock0" class="form-control stock">
+				<option value="APPL" selected>AAPL</option>
+			  	<option value="AMZN">AMZN</option>
+			  	<option value="BTC">BTC</option>
+			  	<option value="ETH">ETH</option>
+				<option value="GOOG">GOOG</option>
+			</select>
+		</td>
+		<td><input type="text" id='quantity0' name='quantity0' placeholder='Quantity' class="form-control"/></td>
+		<td><input type="text" id='target0' name='target0' placeholder='Target Price' class="form-control"/></td>
+		<td class="text-center"><span id="price0"></span></td>
+	</tr>
+	<tr>
+		<td>2</td>
+		<td>
+			<select id='stock1' name="stock1" class="form-control stock">
+				<option value="APPL" selected>AAPL</option>
+			  	<option value="AMZN" >AMZN</option>
+			  	<option value="BTC">BTC</option>
+			  	<option value="ETH">ETH</option>
+				<option value="GOOG">GOOG</option>
+			</select>
+		</td>
+		<td><input type="text" id='quantity1' name='quantity1' placeholder='Quantity' class="form-control"/></td>
+		<td><input type="text" id='target1' name='target1' placeholder='Target Price' class="form-control"/></td>
+		<td class="text-center"><span id="price1"></span></td>
+	</tr>
+	<tr>
+		<td>3</td>
+		<td>
+			<select id='stock2' name="stock2" class="form-control stock">
+				<option value="APPL" selected>AAPL</option>
+			  	<option value="AMZN">AMZN</option>
+			  	<option value="BTC" >BTC</option>
+			  	<option value="ETH">ETH</option>
+				<option value="GOOG">GOOG</option>
+			</select>
+		</td>
+		<td><input type="text" id='quantity2' name='quantity2' placeholder='Quantity' class="form-control"/></td>
+		<td><input type="text" id='target2' name='target2' placeholder='Target Price' class="form-control"/></td>
+		<td class="text-center"><span id="price2"></span></td>
+	</tr>
+	</tbody>
+</table>
+<a id="publish" class="btn btn-default pull-left">Publish</a>
+</div>
+</div>
+</div>
+<br>
+<div class="container">
+<div class="row clearfix">
+<div id="msgbox" class="alert alert-info">
+  <strong>Message:</strong> <span class="text-center" id="message">Test</span>
+</div>
+</div>
+</div>
+<script>
+
+$(document).ready(function(){
+     $("#publish").click(function(){
+ 		publishPortfolio();
+     });
+
+     $(".stock").change(function() {
+     	updateCurrentPrice();
+	 });
+ });
+
+var currentPrice = {
+	"APPL": 221,
+	"AMZN": 2000,
+	"BTC": 7018,
+	"ETH": 318,
+	"GOOG": 1165,
+};
+
+updateCurrentPrice();
+
+loadPortfolio();
+
+
+function loadPortfolio(){
+	var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    	json = this.responseText;
+    	if(json){
+    		updatePortfolio(json);
+			$("#message").text('Portfolio loaded from blockchain');
+    	}else{
+    		$("#message").text('No portfolio loaded from blockchain');
+    	}
+    }
+  };
+  xhr.open("GET", "/api/get-portfolio", true);
+  xhr.send();
+}
+
+
+function updatePortfolio(json){
+	/*var json = '{ "stock0":"BTC", "quantity0":30, "target0":9000, ' + 
+			   '  "stock1":"GOOG", "quantity1":3000, "target1":1800, ' + 
+			   '  "stock2":"ETH", "quantity2":700, "target2":450 }'
+	*/
+	var portfolio = JSON.parse(json);
+
+	for (i = 0; i < 3; i++) { 
+		$("#stock"+i).val(portfolio['stock'+i]);
+		$("#quantity"+i).val(portfolio['quantity'+i]);
+		$("#target"+i).val(portfolio['target'+i]);
+    }
+
+    updateCurrentPrice()
+}
+
+function publishPortfolio(){
+	var portfolio = {};
+
+	for (i = 0; i < 3; i++) { 
+		portfolio['stock'+i] = $("#stock"+i).val();
+		portfolio['quantity'+i] = $("#quantity"+i).val();
+		portfolio['target'+i] = $("#target"+i).val();
+    }
+
+    var json = JSON.stringify(portfolio);
+   
+	var xhr = new XMLHttpRequest();
+ 	xhr.onreadystatechange = function() {
+	    if (this.readyState == 4 && this.status == 200) {
+    		$("#message").text("Latest portfolio published to blockchain in transaction [" + this.responseText + "]");
+	    }
+  	};
+  	xhr.open("GET", "/api/save-portfolio/?portfolio=" + encodeURIComponent(json), true);
+  	xhr.send();
+}
+
+
+function updateCurrentPrice() {
+	for (i = 0; i < 3; i++) { 
+		var stock = $("#stock"+i).val()
+    	$("#price"+i).text(currentPrice[stock]);
+    }
+}
+
+
+</script>
+</body>
+</html>
