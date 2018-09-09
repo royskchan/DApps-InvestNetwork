@@ -4,7 +4,7 @@ This is a decentralized social network for SchoolOfAI DApps course (batch 2) fin
 ## Introduction
 InvestNetwork is a decentralized social network for share investment portfolio. You can share your portfolio as well as subscribe other people's portfolio.
 
-This sample project uses **Node** as middle tier, and uses private blockchain **ganache-cli** as storage. The smart contract inside the blockchian can store a portfolio publihsed by user.
+This sample project uses **Node** as middle tier, and uses private blockchain **ganache-cli** as storage. The smart contract inside the blockchian can store a portfolio published by user.
 
 ## Environment Setup
 The game is built on **Node** and requires **truffle**  and **ganache-cli** for running it. 
