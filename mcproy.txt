@@ -1,0 +1,4 @@
+This is mcproy.txt file created by Claude.
+Created on: July 1, 2025
+
+Test file for MCP Roy integration.
